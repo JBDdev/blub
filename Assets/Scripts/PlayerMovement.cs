@@ -15,12 +15,15 @@ public class PlayerMovement : MonoBehaviour
 
     Rigidbody2D rb;
 
+    Animator eyesAnimator;
+
     float baseDiameter;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = transform.GetComponentInChildren<Rigidbody2D>();
+        eyesAnimator = transform.parent.GetComponentInChildren<Animator>();
         baseDiameter = transform.localScale.x;
     }
 
@@ -37,12 +40,14 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+    // TODO: Do the Animator SetBool call by index rather than by string name
     void readInput()
     {
         //TODO: Move keyboard input to separate function call
         if (Input.GetKey(KeyCode.D))
         {
             holdingRight = true;
+            eyesAnimator.SetBool("Look Left", false);
         }
         else
         {
@@ -52,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.A))
         {
             holdingLeft = true;
+            eyesAnimator.SetBool("Look Left", true);
         }
         else
         {
