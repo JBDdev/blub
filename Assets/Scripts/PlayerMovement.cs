@@ -7,11 +7,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float moveSpeed = 0.1f;
     [SerializeField] float stretchSpeed = 0.1f;
     [SerializeField] float maxStretch = 5f;
+    [SerializeField] float jumpForce = 10f;
+    [SerializeField] bool usedJump = false;
 
     [SerializeField] bool holdingRight = false;
     [SerializeField] bool holdingLeft = false;
     [SerializeField] bool holdingSpace = false;
     [SerializeField] bool holdingShift = false;
+    
 
     Rigidbody2D rb;
 
@@ -40,10 +43,28 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.CompareTag("Floor") && col.GetContact(0).normal.y > 0)
+        {
+            usedJump = false;
+        }
+        
+    }
+
     // TODO: Do the Animator SetBool call by index rather than by string name
     void readInput()
     {
-        //TODO: Move keyboard input to separate function call
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            if (!usedJump)
+            {
+                rb.AddForce(new Vector2(0f, jumpForce));
+                usedJump = true;
+            }
+            
+        }
+
         if (Input.GetKey(KeyCode.D))
         {
             holdingRight = true;
