@@ -40,7 +40,8 @@ public class PlayerMovement : MonoBehaviour
     {
         handleLeftRight();
         handleStretch();
-        
+
+        eyesAnimator.SetFloat("Y Velocity", rb.velocity.y);
     }
 
     void OnCollisionEnter2D(Collision2D col)
