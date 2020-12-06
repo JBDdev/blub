@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float stretchSpeed = 0.1f;
     [SerializeField] float maxStretch = 5f;
     [SerializeField] float jumpForce = 10f;
+    [SerializeField] float maxVelocity = 10f;
     [SerializeField] bool usedJump = false;
 
     [SerializeField] bool holdingRight = false;
@@ -111,12 +112,12 @@ public class PlayerMovement : MonoBehaviour
 
     void handleLeftRight()
     {
-        if (holdingRight)
+        if (holdingRight && (rb.velocity.x <= maxVelocity))
         {
             rb.AddForce(new Vector2(moveSpeed * Time.deltaTime, 0.0f));
         }
 
-        if (holdingLeft)
+        if (holdingLeft && (rb.velocity.x >= -maxVelocity))
         {
             rb.AddForce(new Vector2(-moveSpeed * Time.deltaTime, 0.0f));
         }

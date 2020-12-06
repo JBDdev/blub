@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] float lerpSpeed;
-    [SerializeField] float maxCameraOffset;
+    [SerializeField] float speedThreshold;
+    [Range(0.0001f, 0.1f)] public float lerpSpeedToCenter;
+    [Range(0.0001f, 0.1f)] public float lerpSpeedToOffset;
+    [SerializeField] float cameraOffsetX;
     [SerializeField] GameObject player;
-
+   
     Rigidbody2D playerRB;
 
     // Start is called before the first frame update
@@ -25,17 +27,51 @@ public class CameraController : MonoBehaviour
         // Interpolate camera movement on x based on velocity
         // Revert camera back to camera origin when within a certain low-velocity threshold
         //
-        transform.position = new Vector3
-            (
-                Mathf.Clamp
+
+        if (playerRB.velocity.x > speedThreshold)
+        {
+            transform.position = Vector3.Lerp
                 (
-                    player.transform.position.x + ((player.transform.position.x + maxCameraOffset) * lerpSpeed), 
-                    player.transform.position.x -maxCameraOffset, 
-                    player.transform.position.x + maxCameraOffset
+                    transform.position,
+                    new Vector3
+                        (
+                            Mathf.Clamp(player.transform.position.x + (cameraOffsetX * 2), player.transform.position.x - cameraOffsetX, player.transform.position.x + cameraOffsetX),
+                            player.transform.position.y,
+                            transform.position.z
+                        ),
+                    lerpSpeedToOffset
+                );
+        }
+        else if (playerRB.velocity.x < -speedThreshold)
+        {
+            transform.position = Vector3.Lerp
+                (
+                    transform.position,
+                    new Vector3
+                        (
+                            Mathf.Clamp(player.transform.position.x - (cameraOffsetX * 2), player.transform.position.x - cameraOffsetX, player.transform.position.x + cameraOffsetX),
+                            player.transform.position.y,
+                            transform.position.z
+                         ),
+                    lerpSpeedToOffset
+                );
+        }
+        else
+        {
+            transform.position = Vector3.Lerp
+            (
+                transform.position,
+                new Vector3
+                (
+                    player.transform.position.x,
+                    player.transform.position.y,
+                    transform.position.z
                 ),
-                player.transform.position.y,
-                transform.position.z
+                lerpSpeedToCenter
             );
+        }
+        
+        
            
     }
 }

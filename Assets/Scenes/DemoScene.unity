@@ -160,8 +160,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d92ed090d36e75c44b14b91cce9bd150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lerpSpeed: 0.3
-  maxCameraOffset: 5
+  speedThreshold: 3.95
+  lerpSpeedToCenter: 0.034
+  lerpSpeedToOffset: 0.095
+  cameraOffsetX: 5
   player: {fileID: 2019517182}
 --- !u!20 &519420031
 Camera:
@@ -460,7 +462,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1235715835}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.38, y: -2.62, z: 0}
+  m_LocalPosition: {x: -44.1, y: -2.62, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2019517185}
@@ -872,6 +874,7 @@ MonoBehaviour:
   stretchSpeed: 3
   maxStretch: 5
   jumpForce: 65
+  maxVelocity: 10
   usedJump: 0
   holdingRight: 0
   holdingLeft: 0
