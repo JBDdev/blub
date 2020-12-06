@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool holdingLeft = false;
     [SerializeField] bool holdingSpace = false;
     [SerializeField] bool holdingShift = false;
+    [SerializeField] bool holdingDown = false;
     
 
     Rigidbody2D rb;
@@ -43,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        handleLeftRight();
+        handleMovement();
         handleStretch();
 
         eyesAnimator.SetFloat("Y Velocity", rb.velocity.y);
@@ -108,9 +109,18 @@ public class PlayerMovement : MonoBehaviour
         {
             holdingShift = false;
         }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            holdingDown = true;
+        }
+        else
+        {
+            holdingDown = false;
+        }
     }
 
-    void handleLeftRight()
+    void handleMovement()
     {
         if (holdingRight && (rb.velocity.x <= maxVelocity))
         {
@@ -120,6 +130,15 @@ public class PlayerMovement : MonoBehaviour
         if (holdingLeft && (rb.velocity.x >= -maxVelocity))
         {
             rb.AddForce(new Vector2(-moveSpeed * Time.deltaTime, 0.0f));
+        }
+
+        if (holdingDown)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+        else
+        {
+            rb.constraints = RigidbodyConstraints2D.None;
         }
     }
 

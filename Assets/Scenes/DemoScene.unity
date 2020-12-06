@@ -162,8 +162,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedThreshold: 3.95
   lerpSpeedToCenter: 0.034
-  lerpSpeedToOffset: 0.095
-  cameraOffsetX: 5
+  lerpSpeedToOffset: 0.045
+  cameraOffsetX: 10
   player: {fileID: 2019517182}
 --- !u!20 &519420031
 Camera:
@@ -880,6 +880,7 @@ MonoBehaviour:
   holdingLeft: 0
   holdingSpace: 0
   holdingShift: 0
+  holdingDown: 0
 --- !u!50 &2019517187
 Rigidbody2D:
   serializedVersion: 4
