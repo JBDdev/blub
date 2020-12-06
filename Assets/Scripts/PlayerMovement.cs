@@ -17,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     
 
     Rigidbody2D rb;
+    CircleCollider2D circleHitbox;
+    PolygonCollider2D ovalHitbox;
 
     Animator eyesAnimator;
 
@@ -25,8 +27,10 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rb = transform.GetComponentInChildren<Rigidbody2D>();
+        rb = transform.GetComponent<Rigidbody2D>();
         eyesAnimator = transform.parent.GetComponentInChildren<Animator>();
+        circleHitbox = transform.GetComponent<CircleCollider2D>();
+        ovalHitbox = transform.GetComponent<PolygonCollider2D>();
         baseDiameter = transform.localScale.x;
     }
 
@@ -120,6 +124,7 @@ public class PlayerMovement : MonoBehaviour
 
     void handleStretch()
     {
+        //React to player input
         if (holdingSpace)
         {
             transform.localScale = new Vector2(transform.localScale.x + (stretchSpeed * Time.deltaTime), baseDiameter);
@@ -130,6 +135,7 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector2(transform.localScale.x + (-stretchSpeed * Time.deltaTime), baseDiameter);
         }
 
+        //Constrain the stretch of the rigid body
         if (transform.localScale.x > maxStretch)
         {
             transform.localScale = new Vector2(maxStretch, baseDiameter);
@@ -139,6 +145,23 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector2(baseDiameter, baseDiameter);
         }
+
+        //Swaps to circle collider for no stretch at all and polygon collider for any amount of stretch
+        if (transform.localScale.x <= baseDiameter)
+        {
+            //Enable Circle collider
+            circleHitbox.enabled = true;
+            //Disable polygon collider
+            ovalHitbox.enabled = false;
+        }
+        else
+        {
+            //Enable polygon collider
+            ovalHitbox.enabled = true;
+            //Disable Circle collider
+            circleHitbox.enabled = false;
+        }
+
 
     }
 }
