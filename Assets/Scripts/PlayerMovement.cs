@@ -4,38 +4,54 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 0.1f;
-    [SerializeField] float stretchSpeed = 0.1f;
-    [SerializeField] float maxStretch = 5f;
-    [SerializeField] float jumpForce = 10f;
-    [SerializeField] float maxVelocity = 10f;
-    
-    [SerializeField] bool usedJump = false;
+    #region Inspector Fields
+    [Space]
 
-    //Dash Controls
+    [Header("Speed Controls")]
+    [SerializeField] float moveSpeed = 0.1f;
+    [SerializeField] float jumpForce = 10f;
+    [SerializeField] float stretchSpeed = 0.1f;
+
+    [Space]
+
+    [Header("Player Constraints")]
+    [SerializeField] float maxStretch = 5f;
+    [SerializeField] float maxVelocity = 10f;
+
+    [Space]
+
+    [Header("Dash Controls")]
     [SerializeField] float dashCooldown = 1f;
     [SerializeField] float dashForce = 10f;
     [SerializeField] float dashRotationalSpeed = 5f;
     [SerializeField] float rotationalForceOffset = 1f;
 
+    [Space]
+
+    [Header("Input Registration")]
     [SerializeField] bool holdingRight = false;
     [SerializeField] bool holdingLeft = false;
     [SerializeField] bool holdingSpace = false;
     [SerializeField] bool holdingShift = false;
     [SerializeField] bool holdingDown = false;
+    [Space]
+    [SerializeField] bool usedJump = false;
+    #endregion
 
+    #region Private Fields
     float storedRotationalSpeed = 0f;
     bool canDash = true;
+    float baseDiameter;
+    #endregion
 
+    #region Component References
     Rigidbody2D rb;
     CircleCollider2D circleHitbox;
     PolygonCollider2D ovalHitbox;
-
     Animator eyesAnimator;
+    #endregion
 
-    float baseDiameter;
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = transform.GetComponent<Rigidbody2D>();
@@ -45,7 +61,6 @@ public class PlayerMovement : MonoBehaviour
         baseDiameter = transform.localScale.x;
     }
 
-    // Update is called once per frame
     void Update()
     {
         readInput();
@@ -70,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
 
     void readInput()
     {
-        //Jump controls
+        #region Jump Controls
         if (Input.GetKeyDown(KeyCode.W))
         {
             if (!usedJump)
@@ -79,8 +94,7 @@ public class PlayerMovement : MonoBehaviour
                 usedJump = true;
             }
         }
-
-
+        #endregion
 
         #region Left / Right Controls
         if (Input.GetKey(KeyCode.D))
@@ -175,7 +189,7 @@ public class PlayerMovement : MonoBehaviour
         }
         #endregion
 
-        // Stretch & Shrink
+        #region Stretch Controls
         if (Input.GetKey(KeyCode.Space))
         {
             holdingSpace = true;
@@ -193,8 +207,9 @@ public class PlayerMovement : MonoBehaviour
         {
             holdingShift = false;
         }
+        #endregion
 
-        //Rotational controls
+        #region Rotation Freeze Controls
         if (Input.GetKey(KeyCode.S))
         {
             holdingDown = true;
@@ -203,24 +218,24 @@ public class PlayerMovement : MonoBehaviour
         {
             holdingDown = false;
         }
+        #endregion
     }
 
     void handleMovement()
     {
-        //Rightward Movement
+        #region Left / Right Movement
         if (holdingRight && (rb.velocity.x <= maxVelocity))
         {
             rb.AddForce(new Vector2(moveSpeed * Time.deltaTime, 0.0f));
         }
 
-        //Leftward Movement
         if (holdingLeft && (rb.velocity.x >= -maxVelocity))
         {
             rb.AddForce(new Vector2(-moveSpeed * Time.deltaTime, 0.0f));
         }
+        #endregion
 
-        //Rotational controls
-
+        #region Rotation Controls
         if (holdingDown)
         {
             if (storedRotationalSpeed == 0f)
@@ -239,14 +254,12 @@ public class PlayerMovement : MonoBehaviour
                 storedRotationalSpeed = 0f;
             }
         }
-
-            
-
+        #endregion
     }
 
     void handleStretch()
     {
-        //React to player input
+        #region Input Handling
         if (holdingSpace)
         {
             transform.localScale = new Vector2(transform.localScale.x + (stretchSpeed * Time.deltaTime), baseDiameter);
@@ -256,8 +269,9 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector2(transform.localScale.x + (-stretchSpeed * Time.deltaTime), baseDiameter);
         }
+        #endregion
 
-        //Constrain the stretch of the rigid body
+        #region Stretch Constraints
         if (transform.localScale.x > maxStretch)
         {
             transform.localScale = new Vector2(maxStretch, baseDiameter);
@@ -267,23 +281,20 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector2(baseDiameter, baseDiameter);
         }
+        #endregion
 
-        //Swaps to circle collider for no stretch at all and polygon collider for any amount of stretch
+        #region Collider Swapping
         if (transform.localScale.x <= baseDiameter)
         {
-            //Enable Circle collider
             circleHitbox.enabled = true;
-            //Disable polygon collider
             ovalHitbox.enabled = false;
         }
         else
         {
-            //Enable polygon collider
             ovalHitbox.enabled = true;
-            //Disable Circle collider
             circleHitbox.enabled = false;
         }
-
+        #endregion
 
     }
 

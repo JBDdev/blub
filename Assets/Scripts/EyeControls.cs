@@ -6,22 +6,17 @@ public class EyeControls : MonoBehaviour
 {
 
     [SerializeField] float yOffset;
+    Transform bodyReference;
 
-    Transform bodyRef;
-    // Reference to the body & its transform
-    // Y coordinate to lock on to
-
-    // Start is called before the first frame update
     void Start()
     {
-        bodyRef = transform.parent.GetChild(0);
+        bodyReference = transform.parent.GetChild(0);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        bodyRef = transform.parent.GetChild(0);
+        bodyReference = transform.parent.GetChild(0);
 
-        transform.position = new Vector3(bodyRef.position.x, bodyRef.position.y + yOffset);
+        transform.position = new Vector3(bodyReference.position.x, bodyReference.position.y + yOffset);
     }
 }

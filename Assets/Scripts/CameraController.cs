@@ -12,22 +12,13 @@ public class CameraController : MonoBehaviour
    
     Rigidbody2D playerRB;
 
-    // Start is called before the first frame update
     void Start()
     {
         playerRB = player.GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
-
-        // TODO:
-        //  
-        // Interpolate camera movement on x based on velocity
-        // Revert camera back to camera origin when within a certain low-velocity threshold
-        //
-
         if (playerRB.velocity.x > speedThreshold)
         {
             transform.position = Vector3.Lerp
@@ -69,9 +60,6 @@ public class CameraController : MonoBehaviour
                 ),
                 lerpSpeedToCenter
             );
-        }
-        
-        
-           
+        }       
     }
 }
