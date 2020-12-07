@@ -16,7 +16,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool holdingSpace = false;
     [SerializeField] bool holdingShift = false;
     [SerializeField] bool holdingDown = false;
-    
+
+    public float storedRotationalSpeed = 0f;
 
     Rigidbody2D rb;
     CircleCollider2D circleHitbox;
@@ -122,24 +123,41 @@ public class PlayerMovement : MonoBehaviour
 
     void handleMovement()
     {
+        //Rightward Movement
         if (holdingRight && (rb.velocity.x <= maxVelocity))
         {
             rb.AddForce(new Vector2(moveSpeed * Time.deltaTime, 0.0f));
         }
 
+        //Leftward Movement
         if (holdingLeft && (rb.velocity.x >= -maxVelocity))
         {
             rb.AddForce(new Vector2(-moveSpeed * Time.deltaTime, 0.0f));
         }
 
+        //Rotational controls
+
         if (holdingDown)
         {
+            if (storedRotationalSpeed == 0f)
+            {
+                storedRotationalSpeed = rb.angularVelocity;
+            }    
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
         else
         {
             rb.constraints = RigidbodyConstraints2D.None;
+
+            if (storedRotationalSpeed != 0f)
+            {
+                rb.angularVelocity = storedRotationalSpeed;
+                storedRotationalSpeed = 0f;
+            }
         }
+
+            
+
     }
 
     void handleStretch()
