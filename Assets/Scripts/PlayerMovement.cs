@@ -9,7 +9,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float maxStretch = 5f;
     [SerializeField] float jumpForce = 10f;
     [SerializeField] float maxVelocity = 10f;
+    
     [SerializeField] bool usedJump = false;
+
+    //Dash Controls
+    [SerializeField] float dashCooldown = 1f;
+    [SerializeField] float dashForce = 10f;
+    [SerializeField] float dashRotationalSpeed = 5f;
+    [SerializeField] float rotationalForceOffset = 1f;
 
     [SerializeField] bool holdingRight = false;
     [SerializeField] bool holdingLeft = false;
@@ -17,7 +24,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool holdingShift = false;
     [SerializeField] bool holdingDown = false;
 
-    public float storedRotationalSpeed = 0f;
+    float storedRotationalSpeed = 0f;
+    bool canDash = true;
 
     Rigidbody2D rb;
     CircleCollider2D circleHitbox;
@@ -60,9 +68,9 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
-    // TODO: Do the Animator SetBool call by index rather than by string name
     void readInput()
     {
+        //Jump controls
         if (Input.GetKeyDown(KeyCode.W))
         {
             if (!usedJump)
@@ -70,9 +78,11 @@ public class PlayerMovement : MonoBehaviour
                 rb.AddForce(new Vector2(0f, jumpForce));
                 usedJump = true;
             }
-            
         }
 
+
+
+        #region Left / Right Controls
         if (Input.GetKey(KeyCode.D))
         {
             holdingRight = true;
@@ -92,7 +102,80 @@ public class PlayerMovement : MonoBehaviour
         {
             holdingLeft = false;
         }
+        #endregion
 
+        #region Dash Controls
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
+        {
+            if (canDash)
+            {
+                rb.freezeRotation = true;
+                rb.freezeRotation = false;
+
+                if (rb.velocity.x >= 0)
+                {
+                    #region Rotational forces
+                    rb.AddForceAtPosition
+                        (
+                            Vector2.right * dashRotationalSpeed,
+                            new Vector2
+                            (
+                                transform.position.x ,
+                                transform.position.y + rotationalForceOffset
+                            ), 
+                            ForceMode2D.Impulse
+                        );
+
+                    rb.AddForceAtPosition
+                        (
+                            Vector2.left * dashRotationalSpeed,
+                            new Vector2
+                            (
+                                transform.position.x,
+                                transform.position.y - rotationalForceOffset
+                            ),
+                            ForceMode2D.Impulse
+                        );
+                    #endregion
+
+                    rb.AddForce(Vector2.right * dashForce, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    #region Rotational forces
+                    rb.AddForceAtPosition
+                        (
+                            Vector2.left * dashRotationalSpeed,
+                            new Vector2
+                            (
+                                transform.position.x,
+                                transform.position.y + rotationalForceOffset
+                            ),
+                            ForceMode2D.Impulse
+                        );
+
+                    rb.AddForceAtPosition
+                        (
+                            Vector2.right * dashRotationalSpeed,
+                            new Vector2
+                            (
+                                transform.position.x,
+                                transform.position.y - rotationalForceOffset
+                            ),
+                            ForceMode2D.Impulse
+                        );
+                    #endregion
+
+                    rb.AddForce(Vector2.left * dashForce, ForceMode2D.Impulse);
+                }
+
+                canDash = false;
+                Invoke("resetDash", dashCooldown);
+            }
+        }
+        #endregion
+
+        // Stretch & Shrink
         if (Input.GetKey(KeyCode.Space))
         {
             holdingSpace = true;
@@ -111,6 +194,7 @@ public class PlayerMovement : MonoBehaviour
             holdingShift = false;
         }
 
+        //Rotational controls
         if (Input.GetKey(KeyCode.S))
         {
             holdingDown = true;
@@ -142,12 +226,12 @@ public class PlayerMovement : MonoBehaviour
             if (storedRotationalSpeed == 0f)
             {
                 storedRotationalSpeed = rb.angularVelocity;
-            }    
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            }
+            rb.freezeRotation = true;
         }
         else
         {
-            rb.constraints = RigidbodyConstraints2D.None;
+            rb.freezeRotation = false;
 
             if (storedRotationalSpeed != 0f)
             {
@@ -201,5 +285,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
+    }
+
+    void resetDash()
+    {
+        canDash = true;
     }
 }
