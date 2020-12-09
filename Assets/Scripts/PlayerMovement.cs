@@ -11,8 +11,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float moveSpeed = 0.1f;
     [SerializeField] float jumpForce = 10f;
     [SerializeField] float stretchSpeed = 0.1f;
+    
 
     [Space]
+
+    [Header("Slam Controls")]
+    [SerializeField] float aerialRotationSpeed = 0.1f;
+    [SerializeField] float slamGravity = 1f;
+    [SerializeField] float bounceModifier = 0.1f;
+    [SerializeField] PhysicsMaterial2D floorPhysicsMaterial;
 
     [Header("Player Constraints")]
     [SerializeField] float maxStretch = 5f;
@@ -39,9 +46,10 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region Private Fields
-    float storedRotationalSpeed = 0f;
     bool canDash = true;
+    bool rotationCanceled = false;
     float baseDiameter;
+    float baseGravityScale;
     #endregion
 
     #region Component References
@@ -59,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
         circleHitbox = transform.GetComponent<CircleCollider2D>();
         ovalHitbox = transform.GetComponent<PolygonCollider2D>();
         baseDiameter = transform.localScale.x;
+        baseGravityScale = rb.gravityScale;
     }
 
     void Update()
@@ -79,6 +88,9 @@ public class PlayerMovement : MonoBehaviour
         if (col.gameObject.CompareTag("Floor") && col.GetContact(0).normal.y > 0)
         {
             usedJump = false;
+            rotationCanceled = false;
+            rb.gravityScale = baseGravityScale;
+            Invoke("resetBounce", 0.1f);
         }
         
     }
@@ -235,26 +247,38 @@ public class PlayerMovement : MonoBehaviour
         }
         #endregion
 
+        #region Ground Slam
+        if (holdingDown && rotationCanceled)
+        {
+            rb.gravityScale = slamGravity;
+            floorPhysicsMaterial.bounciness = bounceModifier;
+        }
+
+        #endregion
+
         #region Rotation Controls
         if (holdingDown)
         {
-            if (storedRotationalSpeed == 0f)
-            {
-                storedRotationalSpeed = rb.angularVelocity;
-            }
             rb.freezeRotation = true;
+            if (usedJump)
+            {
+                rotationCanceled = true;
+            }
         }
         else
         {
             rb.freezeRotation = false;
-
-            if (storedRotationalSpeed != 0f)
+            if (holdingRight && rotationCanceled)
             {
-                rb.angularVelocity = storedRotationalSpeed;
-                storedRotationalSpeed = 0f;
+                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z - aerialRotationSpeed);
+            }
+            else if (holdingLeft && rotationCanceled)
+            {
+                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + aerialRotationSpeed);
             }
         }
         #endregion
+
     }
 
     void handleStretch()
@@ -301,5 +325,10 @@ public class PlayerMovement : MonoBehaviour
     void resetDash()
     {
         canDash = true;
+    }
+
+    void resetBounce()
+    {
+        floorPhysicsMaterial.bounciness = 0f;
     }
 }

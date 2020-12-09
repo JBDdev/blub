@@ -2279,6 +2279,11 @@ MonoBehaviour:
   moveSpeed: 65
   jumpForce: 65
   stretchSpeed: 3
+  aerialRotationSpeed: 0.1
+  slamGravity: 2
+  bounceModifier: 10000000
+  floorPhysicsMaterial: {fileID: 6200000, guid: def70fceafaea2841b720d988be74bf6,
+    type: 2}
   maxStretch: 5
   maxVelocity: 10
   dashCooldown: 1
