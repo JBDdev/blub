@@ -18,5 +18,11 @@ Q/E: Boost
 
 ## Changelog
 
+### Demo-v1.1
+
++ Camera pathing simplified. No more camera lurch at high speeds!
++ Added a swing platform to the left room for physics testing (and shenanigans)
+- Removed 'water' from left room
+
 ### DEMO-v1.0
 First public build released! This is meant to be a playable demo for the physics system, along with some basic level geometry to play around with and get a feel for the controls! The left and right rooms contain some test assets originally meant for tinkering with Unity's 2D effector components. These will like be removed in future updates.
